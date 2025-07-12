@@ -39,13 +39,7 @@ class GpsMapAppState extends State<GpsMapApp> {
     zoom: 14.4746,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-    bearing: 192.8334901395799,
-    target: LatLng(37.43296265331129, -122.08832357078792),
-    tilt: 59.440717697143555,
-    zoom: 19.151926040649414,
-  );
-
+  CameraPosition? _initialCameraPosition;
 
   @override
   void initState() {
@@ -55,19 +49,28 @@ class GpsMapAppState extends State<GpsMapApp> {
 
   Future init() async {
     final Position position = await _determinePosition();
-    print(position.toString());
+    _initialCameraPosition = CameraPosition(
+      target: LatLng(position.latitude, position.longitude),
+      zoom: 18,
+    );
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-      ),
+      body: _initialCameraPosition == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : GoogleMap(
+              mapType: MapType.hybrid,
+              initialCameraPosition: _initialCameraPosition!,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _goToTheLake,
         label: const Text('To the lake!'),
@@ -79,8 +82,13 @@ class GpsMapAppState extends State<GpsMapApp> {
   Future<void> _goToTheLake() async {
     final GoogleMapController controller = await _controller.future;
     final Position position = await Geolocator.getCurrentPosition();
-    final CameraPosition cameraPosition = CameraPosition(target: LatLng(position.latitude, position.longitude), zoom: 18);
-    await controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    final CameraPosition cameraPosition = CameraPosition(
+      target: LatLng(position.latitude, position.longitude),
+      zoom: 18,
+    );
+    await controller.animateCamera(
+      CameraUpdate.newCameraPosition(cameraPosition),
+    );
   }
 
   Future<Position> _determinePosition() async {
@@ -112,7 +120,8 @@ class GpsMapAppState extends State<GpsMapApp> {
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
       return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
 
     // When we reach here, permissions are granted and we can
