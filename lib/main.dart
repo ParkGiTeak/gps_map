@@ -32,12 +32,12 @@ class GpsMapApp extends StatefulWidget {
 
 class GpsMapAppState extends State<GpsMapApp> {
   final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  Completer<GoogleMapController>();
+
+  final Set<Polyline> _polylines = {};
 
   CameraPosition? _initialCameraPosition;
-
   int _polylineIdCounter = 0;
-  Set<Polyline> _polylines = {};
   LatLng? _prevPosition;
 
   @override
@@ -57,9 +57,10 @@ class GpsMapAppState extends State<GpsMapApp> {
 
     const locationSettings = LocationSettings();
     Geolocator.getPositionStream(locationSettings: locationSettings).listen((
-      Position position,
-    ) {
+        Position position,) {
       _polylineIdCounter++;
+      final currentPositionLatLng = LatLng(
+          position.latitude, position.longitude)
       final polylineId = PolylineId('$_polylineIdCounter');
       final Polyline polyline = Polyline(
         polylineId: polylineId,
@@ -67,12 +68,12 @@ class GpsMapAppState extends State<GpsMapApp> {
         width: 3,
         points: [
           _prevPosition ?? _initialCameraPosition!.target,
-          LatLng(position.latitude, position.longitude),
+          currentPositionLatLng,
         ],
       );
       setState(() {
         _polylines.add(polyline);
-        _prevPosition = LatLng(position.latitude, position.longitude);
+        _prevPosition = currentPositionLatLng;
       });
 
       _moveCamera(position);
@@ -84,16 +85,16 @@ class GpsMapAppState extends State<GpsMapApp> {
     return Scaffold(
       body: _initialCameraPosition == null
           ? Center(
-              child: CircularProgressIndicator(),
-            )
+        child: CircularProgressIndicator(),
+      )
           : GoogleMap(
-              mapType: MapType.hybrid,
-              initialCameraPosition: _initialCameraPosition!,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
-              polylines: _polylines,
-            ),
+        mapType: MapType.hybrid,
+        initialCameraPosition: _initialCameraPosition!,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+        polylines: _polylines,
+      ),
     );
   }
 
