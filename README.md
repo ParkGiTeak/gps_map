@@ -1,16 +1,12 @@
 # gps_map
 
-A new Flutter project.
+* Flutter Sturdy
+  - GoogleMapsFlutter
+    - Android의 경우 Manifest에 위치권한 FineLocation, CoraseLocation을 추가해줘야한다.
+    - metaData로 GoogleMaps API Key를 넣어줘야하는데 외부 유출 방지를 위해서 local.properties에 넣어서 사용하도록 커스텀.
+  - Geolocator
+    - geolocator Library를 사용하면 사용자의 현재 위치와 이전에 마지막에 연결된 위치, 변경되는 위치정보를 Stream 데이터로 받을 수 있게 해준다.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+### 위에 정렬된 내용을 사용하여 수평 측정 기능을 제공하는 Android, iOS, Web Flutter App Study
+- [참고 강의](https://www.inflearn.com/course/플러터-초입문-왕초보/dashboard)
