@@ -60,7 +60,7 @@ class GpsMapAppState extends State<GpsMapApp> {
         Position position,) {
       _polylineIdCounter++;
       final currentPositionLatLng = LatLng(
-          position.latitude, position.longitude)
+          position.latitude, position.longitude);
       final polylineId = PolylineId('$_polylineIdCounter');
       final Polyline polyline = Polyline(
         polylineId: polylineId,
